@@ -70,12 +70,12 @@ module "monitoring" {
   rds_instance_id = module.rds.rds_instance_id
 }
 
-module "cicd" {
+ module "cicd" {
   source         = "./modules/cicd"
-  aws_account_id = "123456789012"
+  aws_account_id = "820242940122"
   aws_region     = "us-east-1"
-  github_repo    = "username/repository"
-  s3_bucket      = "terraform-state-bucket"
+  github_repo    = "RohitManna11/multi-tier-webapp"
+  s3_bucket      = "rohit11-terraform-backend-bucket"
   dynamodb_table = "terraform-lock"
 }
 

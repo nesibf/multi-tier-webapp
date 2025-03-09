@@ -16,6 +16,7 @@ resource "aws_db_instance" "primary" {
   multi_az               = true # Ensures high availability
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+  backup_retention_period = 7
 
   tags = {
     Name = "${var.project_name}-rds-primary"
@@ -24,7 +25,7 @@ resource "aws_db_instance" "primary" {
 
 # Create RDS Read Replica
 resource "aws_db_instance" "replica" {
-  identifier             = "${var.project_name}-rds-replica"
+  identifier             = "${var.project_name}-rds-new-replica"
   engine                 = aws_db_instance.primary.engine
   instance_class         = var.instance_class
   storage_encrypted      = true
