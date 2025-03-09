@@ -4,12 +4,12 @@
 resource "aws_efs_file_system" "efs" {
   creation_token   = "${var.project_name}-efs"
   encrypted        = true
-  kms_key_id       = var.kms_key_arn  # Use KMS key from Security Module
+  kms_key_id       = var.kms_key_arn # Use KMS key from Security Module
   performance_mode = "generalPurpose"
   throughput_mode  = "bursting"
 
   lifecycle_policy {
-    transition_to_ia = "AFTER_30_DAYS"  # Move to infrequent access after 30 days
+    transition_to_ia = "AFTER_30_DAYS" # Move to infrequent access after 30 days
   }
 
   tags = {
@@ -30,10 +30,10 @@ resource "aws_security_group" "efs_sg" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port       = 2049  # NFS Port
+    from_port       = 2049 # NFS Port
     to_port         = 2049
     protocol        = "tcp"
-    security_groups = [var.ec2_security_group_id]  # Only EC2 instances can access EFS
+    security_groups = [var.ec2_security_group_id] # Only EC2 instances can access EFS
   }
 
   egress {

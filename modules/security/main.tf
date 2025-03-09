@@ -3,14 +3,14 @@
 # AWS Web Application Firewall (WAF) for ALB
 resource "aws_waf_web_acl" "waf_acl" {
   name        = "${var.project_name}-waf"
-  metric_name = "${var.project_name}-waf-metrics"  # Required for WAF Classic
+  metric_name = "${var.project_name}metrics" # Required for WAF Classic
   default_action {
-    type = "ALLOW"  # Default action: Allow all traffic unless blocked
+    type = "ALLOW" # Default action: Allow all traffic unless blocked
   }
 
   rules {
     action {
-      type = "BLOCK"  # Block requests that match this rule
+      type = "BLOCK" # Block requests that match this rule
     }
 
     priority = 1
@@ -22,7 +22,7 @@ resource "aws_waf_web_acl" "waf_acl" {
 # Define WAF Rule to Block Bad Requests
 resource "aws_waf_rule" "block_bad_requests" {
   name        = "${var.project_name}-waf-rule"
-  metric_name = "${var.project_name}-waf-rule-metrics"  # Required for WAF Classic
+  metric_name = "${var.project_name}metrics" # Required for WAF Classic
 
   predicates {
     data_id = aws_waf_byte_match_set.trace_block.id
@@ -33,11 +33,11 @@ resource "aws_waf_rule" "block_bad_requests" {
 
 # Define Byte Match Set for Blocking TRACE Method
 resource "aws_waf_byte_match_set" "trace_block" {
-  name        = "${var.project_name}-byte-match"
+  name = "${var.project_name}-byte-match"
 
   byte_match_tuples {
     field_to_match {
-      type = "METHOD"  # Match HTTP method
+      type = "METHOD" # Match HTTP method
     }
 
     target_string         = "TRACE"
@@ -118,14 +118,14 @@ resource "aws_kms_key" "kms_key" {
 
 # IAM Role for EC2
 resource "aws_iam_role" "ec2_role" {
-  name = "${var.project_name}-ec2-role"
+  name = "${var.project_name}-ec2-new-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
+      Effect    = "Allow"
       Principal = { Service = "ec2.amazonaws.com" }
-      Action = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }

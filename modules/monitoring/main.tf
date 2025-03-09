@@ -21,7 +21,7 @@ resource "aws_sns_topic" "alerts" {
 resource "aws_sns_topic_subscription" "email_alert" {
   topic_arn = aws_sns_topic.alerts.arn
   protocol  = "email"
-  endpoint  = var.alert_email  # Email where alerts will be sent
+  endpoint  = var.alert_email # Email where alerts will be sent
 }
 
 # CloudWatch Alarm for High CPU Usage on EC2
@@ -33,7 +33,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_high_cpu" {
   namespace           = "AWS/EC2"
   period              = 60
   statistic           = "Average"
-  threshold           = 80  # Alarm triggers if CPU usage > 80%
+  threshold           = 80 # Alarm triggers if CPU usage > 80%
   alarm_actions       = [aws_sns_topic.alerts.arn]
   dimensions = {
     InstanceId = data.aws_instances.ec2_instances.ids[0] # First instance ID
@@ -49,7 +49,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_high_memory" {
   namespace           = "CWAgent"
   period              = 60
   statistic           = "Average"
-  threshold           = 80  # Alarm triggers if Memory usage > 80%
+  threshold           = 80 # Alarm triggers if Memory usage > 80%
   alarm_actions       = [aws_sns_topic.alerts.arn]
   dimensions = {
     InstanceId = data.aws_instances.ec2_instances.ids[1] # Second instance ID
@@ -66,7 +66,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_low_storage" {
   namespace           = "AWS/RDS"
   period              = 300
   statistic           = "Average"
-  threshold           = 5000000000  # Alarm triggers if storage < 5GB
+  threshold           = 5000000000 # Alarm triggers if storage < 5GB
   alarm_actions       = [aws_sns_topic.alerts.arn]
   dimensions = {
     DBInstanceIdentifier = var.rds_instance_id

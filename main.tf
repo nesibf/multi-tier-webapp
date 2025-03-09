@@ -34,50 +34,50 @@ module "load_balancer" {
 }
 
 module "security" {
-  source      = "./modules/security"
+  source       = "./modules/security"
   project_name = "webapp"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id       = module.vpc.vpc_id
 }
 
 module "efs" {
   source                = "./modules/efs"
   project_name          = "webapp"
-  vpc_id               = module.vpc.vpc_id
-  private_subnets      = module.vpc.private_subnets
+  vpc_id                = module.vpc.vpc_id
+  private_subnets       = module.vpc.private_subnets
   ec2_security_group_id = module.security.ec2_security_group_id
-  kms_key_arn          = module.security.kms_key_arn
+  kms_key_arn           = module.security.kms_key_arn
 }
 
 module "rds" {
   source                = "./modules/rds"
   project_name          = "webapp"
-  vpc_id               = module.vpc.vpc_id
-  private_subnets      = module.vpc.private_subnets
+  vpc_id                = module.vpc.vpc_id
+  private_subnets       = module.vpc.private_subnets
   ec2_security_group_id = module.security.ec2_security_group_id
-  kms_key_arn          = module.security.kms_key_arn
-  instance_class       = "db.t2.micro"
-  allocated_storage    = 20
+  kms_key_arn           = module.security.kms_key_arn
+  instance_class        = "db.t3.micro"
+  allocated_storage     = 20
   max_allocated_storage = 100
-  db_username         = "admin"   # ADD DATABASE USERNAME
-  db_password         = "your-secure-password"  # ADD DATABASE PASSWORD
+  db_username           = "admin"                # ADD DATABASE USERNAME
+  db_password           = "your-secure-password" # ADD DATABASE PASSWORD
 }
 
 module "monitoring" {
-  source       = "./modules/monitoring"
-  project_name = "webapp"
-  alert_email  = "your-email@example.com"
-  asg_name     = module.compute.asg_name
+  source          = "./modules/monitoring"
+  project_name    = "webapp"
+  alert_email     = "your-email@example.com"
+  asg_name        = module.compute.asg_name
   rds_instance_id = module.rds.rds_instance_id
 }
 
-# module "cicd" {
-#   source         = "./modules/cicd"
-#   aws_account_id = "123456789012"
-#   aws_region     = "us-east-1"
-#   github_repo    = "username/repository"
-#   s3_bucket      = "terraform-state-bucket"
-#   dynamodb_table = "terraform-lock"
-# }
+module "cicd" {
+  source         = "./modules/cicd"
+  aws_account_id = "123456789012"
+  aws_region     = "us-east-1"
+  github_repo    = "username/repository"
+  s3_bucket      = "terraform-state-bucket"
+  dynamodb_table = "terraform-lock"
+}
 
 ## FOLLOWING RESOURCES HAVE BEEN REMOVED FROM STATE
 
