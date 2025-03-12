@@ -1,4 +1,4 @@
-# Storage Module - Strictly Following Given Architecture
+# Storage Module - EFS
 
 # Create EFS File System
 resource "aws_efs_file_system" "efs" {
@@ -17,23 +17,15 @@ resource "aws_efs_file_system" "efs" {
   }
 }
 
-# Create Mount Targets for Each Private Subnet
-resource "aws_efs_mount_target" "efs_mount" {
-  count           = length(var.private_subnets)
-  file_system_id  = aws_efs_file_system.efs.id
-  subnet_id       = var.private_subnets[count.index]
-  security_groups = [aws_security_group.efs_sg.id]
-}
-
-# Security Group for EFS
+# Security Group for EFS - Only Allowing EC2 Instances
 resource "aws_security_group" "efs_sg" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port       = 2049 # NFS Port
+    from_port       = 2049
     to_port         = 2049
     protocol        = "tcp"
-    security_groups = [var.ec2_security_group_id] # Only EC2 instances can access EFS
+    security_groups = [var.ec2_security_group_id] # Only EC2 instances can access
   }
 
   egress {
@@ -47,3 +39,12 @@ resource "aws_security_group" "efs_sg" {
     Name = "${var.project_name}-efs-sg"
   }
 }
+
+# Create EFS Mount Target in Each Private Subnet
+resource "aws_efs_mount_target" "efs_mount" {
+  count           = length(var.private_subnets)
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = var.private_subnets[count.index]
+  security_groups = [aws_security_group.efs_sg.id]
+}
+

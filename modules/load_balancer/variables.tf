@@ -11,6 +11,10 @@ variable "public_subnets" {
   type = list(string)
 }
 
+variable "ec2_instance_ids" {
+  type = list(string)
+}
+
 variable "asg_name" {
   type = string
 }

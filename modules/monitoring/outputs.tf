@@ -9,3 +9,7 @@ output "ec2_logs_group_name" {
 output "rds_logs_group_name" {
   value = aws_cloudwatch_log_group.rds_logs.name
 }
+
+output "cloudfront_logs_group_name" {
+  value = aws_cloudwatch_log_group.cloudfront_logs.name
+}

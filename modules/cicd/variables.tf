@@ -17,3 +17,7 @@ variable "s3_bucket" {
 variable "dynamodb_table" {
   type = string
 }
+
+variable "frontend_s3_bucket" {
+  type = string
+}

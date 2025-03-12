@@ -21,7 +21,7 @@ variable "kms_key_arn" {
 
 variable "instance_class" {
   type    = string
-  default = "db.t2.micro"
+  default = "db.t3.micro"
 }
 
 variable "allocated_storage" {
@@ -39,6 +39,5 @@ variable "db_username" {
 }
 
 variable "db_password" {
-  type      = string
-  sensitive = true
+  type = string
 }
