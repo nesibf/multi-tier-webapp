@@ -15,6 +15,10 @@ variable "ec2_security_group_id" {
   type = string
 }
 
+variable "bastion_security_group_id" {
+  type = string
+}
+
 variable "kms_key_arn" {
   type = string
 }

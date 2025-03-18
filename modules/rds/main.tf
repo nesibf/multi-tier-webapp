@@ -9,10 +9,10 @@ resource "aws_db_instance" "primary" {
   allocated_storage       = var.allocated_storage
   max_allocated_storage   = var.max_allocated_storage
   storage_encrypted       = true
-  kms_key_id              = var.kms_key_arn # Use KMS key from Security Module
+  kms_key_id              = var.kms_key_arn 
   username                = var.db_username
   password                = var.db_password
-  publicly_accessible     = false
+  publicly_accessible     = true      # set to true only when testing
   multi_az                = true
   backup_retention_period = 7 
   skip_final_snapshot = true
@@ -44,7 +44,14 @@ resource "aws_security_group" "rds_sg" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [var.ec2_security_group_id] # Only allow backend EC2 instances
+    security_groups = [var.ec2_security_group_id]
+  }
+
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [var.bastion_security_group_id]
   }
 
   egress {

@@ -52,74 +52,28 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
-# Security Group for EC2 - Backend
-resource "aws_security_group" "ec2_sg" {
-  vpc_id = var.vpc_id
-
-  ingress {
-    from_port       = 5000
-    to_port         = 5000
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id] # Only allow traffic from ALB
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.project_name}-ec2-sg"
-  }
-}
-
-# Security Group for RDS - Restricted Access
-resource "aws_security_group" "rds_sg" {
-  vpc_id = var.vpc_id
-
-  ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ec2_sg.id] # Allow only backend EC2 instances
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.project_name}-rds-sg"
-  }
-}
-
 # Security Group for EFS - Allow EC2 Instances
-resource "aws_security_group" "efs_sg" {
-  vpc_id = var.vpc_id
+# resource "aws_security_group" "efs_sg" {
+#   vpc_id = var.vpc_id
 
-  ingress {
-    from_port       = 2049
-    to_port         = 2049
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ec2_sg.id] # Only EC2 instances can access
-  }
+#   ingress {
+#     from_port       = 2049
+#     to_port         = 2049
+#     protocol        = "tcp"
+#     security_groups = [aws_security_group.ec2_sg.id] # Only EC2 instances can access
+#   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  tags = {
-    Name = "${var.project_name}-efs-sg"
-  }
-}
+#   tags = {
+#     Name = "${var.project_name}-efs-sg"
+#   }
+# }
 
 # KMS Key for Encryption
 resource "aws_kms_key" "kms_key" {

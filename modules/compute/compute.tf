@@ -23,17 +23,17 @@ resource "aws_iam_policy" "ec2_policy" {
     Version = "2012-10-17"
     Statement = [
       # Allow EC2 to Read from S3 (If needed)
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          "arn:aws:s3:::${var.frontend_s3_bucket}",
-          "arn:aws:s3:::${var.frontend_s3_bucket}/*"
-        ]
-      },
+      # {
+      #   Effect = "Allow"
+      #   Action = [
+      #     "s3:GetObject",
+      #     "s3:ListBucket"
+      #   ]
+      #   Resource = [
+      #     "arn:aws:s3:::${var.frontend_s3_bucket}",
+      #     "arn:aws:s3:::${var.frontend_s3_bucket}/*"
+      #   ]
+      # },
       # Allow CloudWatch Logs
       {
         Effect = "Allow"
@@ -68,7 +68,7 @@ resource "aws_security_group" "ec2_sg" {
     from_port       = 5000
     to_port         = 5000
     protocol        = "tcp"
-    security_groups = [var.alb_security_group_id] # Only allow traffic from ALB
+    security_groups = [var.alb_security_group_id]
   }
 
   egress {
@@ -88,7 +88,7 @@ resource "aws_launch_template" "backend_lt" {
   name_prefix   = "${var.project_name}-backend-"
   image_id      = var.ami_id
   instance_type = var.instance_type
-  key_name      = var.ssh_key_name
+  //key_name      = var.ssh_key_name
   iam_instance_profile {
     name = aws_iam_instance_profile.ec2_profile.name
   }
@@ -96,14 +96,31 @@ resource "aws_launch_template" "backend_lt" {
 
   user_data = base64encode(<<EOF
 #!/bin/bash
-apt update -y
-apt install -y python3-pip
-cd /home/ubuntu
-git clone https://github.com/RohitManna11/3tier_python_todo_app.git
+
+# Update system and install necessary packages
+sudo dnf update -y
+sudo dnf install -y python3-pip git docker
+
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker ec2-user
+
+# Set the correct home directory for ec2-user
+cd /home/ec2-user
+
+# Clone the GitHub repository
+sudo git clone https://github.com/RohitManna11/3tier_python_todo_app.git
+
+# Navigate to the backend directory
 cd 3tier_python_todo_app/backend
-pip3 install -r requirements.txt
-export DATABASE_URL="postgresql://${var.db_username}:${var.db_password}@${var.db_host}/${var.db_name}"
-gunicorn --bind 0.0.0.0:5000 app:app --daemon
+
+# Install required Python dependencies
+sudo pip3 install -r requirements.txt
+
+# Build and run the Docker container
+sudo docker build -t todo-backend .
+sudo docker run -d -p 5000:5000 --name todo-backend-container todo-backend
+
 EOF
   )
 }
@@ -131,4 +148,3 @@ data "aws_instances" "compute_instances" {
     values = [aws_autoscaling_group.compute_asg.name]
   }
 }
-
