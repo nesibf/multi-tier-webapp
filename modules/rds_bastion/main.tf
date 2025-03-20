@@ -1,11 +1,11 @@
 # EC2 Instance for SSM-Based RDS Access
 resource "aws_instance" "bastion" {
-  ami           = "ami-08b5b3a93ed654d19" # Amazon Linux 2 AMI
-  instance_type = "t2.micro"
-  subnet_id     = var.public_subnet_id
-  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
+  ami                         = "ami-08b5b3a93ed654d19" # Amazon Linux 2 AMI
+  instance_type               = "t2.micro"
+  subnet_id                   = var.public_subnet_id
+  iam_instance_profile        = aws_iam_instance_profile.ssm_profile.name
   associate_public_ip_address = true
-  security_groups = [aws_security_group.bastion_sg.id]
+  security_groups             = [aws_security_group.bastion_sg.id]
 
   user_data = <<-EOF
               #!/bin/bash

@@ -40,9 +40,9 @@ variable "max_size" {
   default = 4
 }
 
-# variable "frontend_s3_bucket" {
-#   type = string
-# }
+variable "frontend_s3_bucket" {
+  type = string
+}
 
 # variable "ssh_key_name" {
 #   type = string

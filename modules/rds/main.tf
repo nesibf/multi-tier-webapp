@@ -9,13 +9,13 @@ resource "aws_db_instance" "primary" {
   allocated_storage       = var.allocated_storage
   max_allocated_storage   = var.max_allocated_storage
   storage_encrypted       = true
-  kms_key_id              = var.kms_key_arn 
+  kms_key_id              = var.kms_key_arn
   username                = var.db_username
   password                = var.db_password
-  publicly_accessible     = true      # set to true only when testing
+  publicly_accessible     = true # set to true only when testing
   multi_az                = true
-  backup_retention_period = 7 
-  skip_final_snapshot = true
+  backup_retention_period = 7
+  skip_final_snapshot     = true
 
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]

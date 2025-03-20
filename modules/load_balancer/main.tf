@@ -70,7 +70,7 @@ resource "aws_autoscaling_attachment" "asg_to_target_group" {
 
 
 
-# HTTPS Listener (Port 443)
+# HTTP Listener (Port 80)
 resource "aws_lb_listener" "https_listener" {
   load_balancer_arn = aws_lb.alb.arn
   port              = 80

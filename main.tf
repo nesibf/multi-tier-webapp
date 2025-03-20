@@ -19,24 +19,24 @@ module "compute" {
   project_name          = "webapp"
   vpc_id                = module.vpc.vpc_id
   private_subnets       = module.vpc.private_subnets
-  alb_security_group_id = module.security.alb_security_group_id
+  alb_security_group_id = module.load_balancer.alb_security_group_id
   ami_id                = "ami-05b10e08d247fb927"
   instance_type         = "t2.micro"
   desired_capacity      = 2
   min_size              = 2
   max_size              = 4
-  # frontend_s3_bucket    = module.cicd.frontend_s3_bucket
+  frontend_s3_bucket    = module.cicd.frontend_s3_bucket
   # ssh_key_name          = "MyNewKey"
 }
 
 # LOAD BALANCER MODULE
 module "load_balancer" {
-  source              = "./modules/load_balancer"
-  project_name        = "webapp"
-  vpc_id              = module.vpc.vpc_id
-  public_subnets      = module.vpc.public_subnets
-  ec2_instance_ids    = module.compute.ec2_instance_ids
-  asg_name            = module.compute.asg_name
+  source           = "./modules/load_balancer"
+  project_name     = "webapp"
+  vpc_id           = module.vpc.vpc_id
+  public_subnets   = module.vpc.public_subnets
+  ec2_instance_ids = module.compute.ec2_instance_ids
+  asg_name         = module.compute.asg_name
 }
 
 # MONITORING MODULE
@@ -50,29 +50,29 @@ module "load_balancer" {
 # }
 
 # RDS MODULE
-module "rds" {
-  source                = "./modules/rds"
-  project_name          = "webapp"
-  vpc_id                = module.vpc.vpc_id
-  private_subnets       = module.vpc.private_subnets
-  ec2_security_group_id = module.compute.backend_ec2_sg_id
-  bastion_security_group_id = module.rds_bastion.bastion_sg_id
-  kms_key_arn           = module.security.kms_key_arn
-  instance_class        = "db.t3.micro"
-  allocated_storage     = 20
-  max_allocated_storage = 100
-  db_username           = "dbadmin"
-  db_password           = "dbadmin11"
-}
+# module "rds" {
+#   source                    = "./modules/rds"
+#   project_name              = "webapp"
+#   vpc_id                    = module.vpc.vpc_id
+#   private_subnets           = module.vpc.private_subnets
+#   ec2_security_group_id     = module.compute.backend_ec2_sg_id
+#   bastion_security_group_id = module.rds_bastion.bastion_sg_id
+#   kms_key_arn               = module.security.kms_key_arn
+#   instance_class            = "db.t3.micro"
+#   allocated_storage         = 20
+#   max_allocated_storage     = 100
+#   db_username               = "dbadmin"
+#   db_password               = "dbadmin11"
+# }
 
 # RDS Bastion Module for testing
-module "rds_bastion" {
-  source           = "./modules/rds_bastion"
-  ami_id           = "ami-08b5b3a93ed654d19" # Amazon Linux 2 AMI
-  instance_type    = "t2.micro"
-  public_subnet_id = module.vpc.public_subnets[0]
-  vpc_id           = module.vpc.vpc_id
-}
+# module "rds_bastion" {
+#   source           = "./modules/rds_bastion"
+#   ami_id           = "ami-08b5b3a93ed654d19" # Amazon Linux 2 AMI
+#   instance_type    = "t2.micro"
+#   public_subnet_id = module.vpc.public_subnets[0]
+#   vpc_id           = module.vpc.vpc_id
+# }
 
 # module "efs" {
 #   source                = "./modules/efs"
@@ -97,11 +97,11 @@ module "security" {
 # UPDATED SECURITY GROUP TO ALLOW SSM ACCESS
 resource "aws_security_group_rule" "allow_ssm_inbound" {
   type              = "ingress"
-  from_port        = 443
-  to_port          = 443
-  protocol         = "tcp"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
   security_group_id = module.compute.backend_ec2_sg_id
-  cidr_blocks      = ["0.0.0.0/0"]  # Restrict to AWS IPs in production
+  cidr_blocks       = ["0.0.0.0/0"] # Restrict to AWS IPs in production
 }
 
 # UPDATED IAM POLICY FOR EC2 TO ALLOW SSM
@@ -111,15 +111,15 @@ resource "aws_iam_role_policy_attachment" "ssm_managed" {
 }
 
 # CICD MODULE
-# module "cicd" {
-#   source             = "./modules/cicd"
-#   aws_account_id     = "820242940122"
-#   aws_region         = "us-east-1"
-#   github_repo        = "RohitManna11/3tier_python_todo_app"
-#   s3_bucket          = "rohit11-terraform-backend-bucket"
-#   dynamodb_table     = "terraform-lock"
-#   frontend_s3_bucket = "react-python-todo-frontend"
-# }
+module "cicd" {
+  source             = "./modules/cicd"
+  aws_account_id     = "820242940122"
+  aws_region         = "us-east-1"
+  github_repo        = "RohitManna11/3tier_python_todo_app"
+  s3_bucket          = "rohit11-terraform-backend-bucket"
+  dynamodb_table     = "terraform-lock"
+  frontend_s3_bucket = "react-python-todo-frontend"
+}
 
 ## FOLLOWING RESOURCES HAVE BEEN REMOVED FROM STATE
 
