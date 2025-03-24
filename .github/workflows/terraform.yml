@@ -45,3 +45,19 @@ jobs:
       - name: Apply Terraform Changes
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
+
+      # === NEW STEPS BELOW ===
+
+      - name: Fetch frontend S3 bucket name
+        id: bucket
+        run: |
+          echo "BUCKET_NAME=$(terraform output -raw frontend_s3_bucket)" >> $GITHUB_ENV
+
+      - name: Clone frontend repo
+        run: git clone https://github.com/RohitManna11/3tier_python_todo_app.git
+
+      - name: Sync frontend → S3
+        run: |
+          aws s3 sync 3tier_python_todo_app/frontend s3://$BUCKET_NAME \
+            --delete \
+            --acl public-read

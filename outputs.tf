@@ -14,3 +14,7 @@ output "rds_endpoint" {
 output "frontend_url" {
   value = "http://${module.cicd.frontend_s3_bucket}.s3-website-us-east-1.amazonaws.com"
 }
+
+output "frontend_s3_bucket" {
+  value = module.cicd.frontend_s3_bucket
+}

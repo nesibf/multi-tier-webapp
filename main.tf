@@ -50,29 +50,29 @@ module "load_balancer" {
 # }
 
 # RDS MODULE
-module "rds" {
-  source                    = "./modules/rds"
-  project_name              = "webapp"
-  vpc_id                    = module.vpc.vpc_id
-  private_subnets           = module.vpc.private_subnets
-  ec2_security_group_id     = module.compute.backend_ec2_sg_id
-  bastion_security_group_id = module.rds_bastion.bastion_sg_id
-  # kms_key_arn               = module.security.kms_key_arn
-  instance_class            = "db.t3.micro"
-  allocated_storage         = 20
-  max_allocated_storage     = 100
-  db_username               = "dbadmin"
-  db_password               = "dbadmin11"
-}
+# module "rds" {
+#   source                    = "./modules/rds"
+#   project_name              = "webapp"
+#   vpc_id                    = module.vpc.vpc_id
+#   private_subnets           = module.vpc.private_subnets
+#   ec2_security_group_id     = module.compute.backend_ec2_sg_id
+#   bastion_security_group_id = module.rds_bastion.bastion_sg_id
+#   # kms_key_arn               = module.security.kms_key_arn
+#   instance_class            = "db.t3.micro"
+#   allocated_storage         = 20
+#   max_allocated_storage     = 100
+#   db_username               = "dbadmin"
+#   db_password               = "dbadmin11"
+# }
 
 # RDS Bastion Module for testing
-module "rds_bastion" {
-  source           = "./modules/rds_bastion"
-  ami_id           = "ami-08b5b3a93ed654d19" # Amazon Linux 2 AMI
-  instance_type    = "t2.micro"
-  public_subnet_id = module.vpc.public_subnets[0]
-  vpc_id           = module.vpc.vpc_id
-}
+# module "rds_bastion" {
+#   source           = "./modules/rds_bastion"
+#   ami_id           = "ami-08b5b3a93ed654d19" # Amazon Linux 2 AMI
+#   instance_type    = "t2.micro"
+#   public_subnet_id = module.vpc.public_subnets[0]
+#   vpc_id           = module.vpc.vpc_id
+# }
 
 # module "efs" {
 #   source                = "./modules/efs"
