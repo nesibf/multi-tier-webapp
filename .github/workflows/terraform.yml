@@ -51,7 +51,8 @@ jobs:
       - name: Fetch frontend S3 bucket name
         id: bucket
         run: |
-          echo "BUCKET_NAME=$(terraform output -raw frontend_s3_bucket)" >> $GITHUB_ENV
+          bucket=$(terraform output -raw frontend_s3_bucket)
+          echo "FRONTEND_BUCKET=${bucket}" >> $GITHUB_ENV
 
       - name: Clone frontend repo
         run: git clone https://github.com/RohitManna11/3tier_python_todo_app.git
