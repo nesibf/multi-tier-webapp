@@ -90,66 +90,42 @@ resource "aws_s3_bucket" "frontend" {
   bucket = var.frontend_s3_bucket
 }
 
-# CloudFront Origin Access Control (OAC) for Secure S3 Access
-resource "aws_cloudfront_origin_access_control" "oac" {
-  name                              = "S3-OAC"
-  origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
-}
-
-resource "aws_cloudfront_distribution" "frontend_cdn" {
-  origin {
-    domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
-    origin_id                = "S3-frontend"
-    origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
-  }
-
-  enabled             = true
-  default_root_object = "index.html"
-
-  default_cache_behavior {
-    target_origin_id       = "S3-frontend"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD"]
-    cached_methods         = ["GET", "HEAD"]
-
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
-  }
-
-  restrictions {
-    geo_restriction {
-      restriction_type = "none" # No restrictions, allowing access from anywhere
-    }
-  }
-
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
-}
-
-resource "aws_s3_bucket_policy" "frontend_policy" {
+resource "aws_s3_bucket_public_access_block" "frontend" {
   bucket = aws_s3_bucket.frontend.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+
+resource "aws_s3_bucket_website_configuration" "frontend" {
+  bucket = aws_s3_bucket.frontend.id
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "index.html"
+  }
+}
+
+
+resource "aws_s3_bucket_policy" "demo_policy" {
+  bucket = aws_s3_bucket.frontend.id
+
+  depends_on = [aws_s3_bucket_public_access_block.frontend]
 
   policy = jsonencode({
     Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "cloudfront.amazonaws.com"
-      },
-      Action   = "s3:GetObject",
-      Resource = "arn:aws:s3:::${aws_s3_bucket.frontend.id}/*",
-      Condition = {
-        StringEquals = {
-          "AWS:SourceArn" : "arn:aws:cloudfront::${var.aws_account_id}:distribution/${aws_cloudfront_distribution.frontend_cdn.id}"
-        }
+    Statement = [
+      {
+        Effect    = "Allow",
+        Principal = "*",
+        Action    = "s3:GetObject",
+        Resource  = "arn:aws:s3:::${aws_s3_bucket.frontend.id}/*"
       }
-    }]
+    ]
   })
 }
