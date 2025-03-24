@@ -15,6 +15,6 @@ output "frontend_url" {
   value = "http://${module.cicd.frontend_s3_bucket}.s3-website-us-east-1.amazonaws.com"
 }
 
-output "frontend_s3_bucket" {
-  value = module.cicd.frontend_s3_bucket
+output "alb_dns_name" {
+  value = module.load_balancer.alb_dns_name
 }
