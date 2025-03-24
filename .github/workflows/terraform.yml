@@ -55,5 +55,4 @@ jobs:
         run: |
           aws s3 sync 3tier_python_todo_app/frontend \
             s3://${{ secrets.FRONTEND_BUCKET }} \
-            --delete \
-            --acl public-read
+            --delete
