@@ -1,6 +1,6 @@
-output "rds_endpoint" {
-  value = module.rds.rds_endpoint
-}
+# output "rds_endpoint" {
+#   value = module.rds.rds_endpoint
+# }
 
 # output "bastion_ssm_session" {
 #   description = "SSM Session URL for Bastion Host"
