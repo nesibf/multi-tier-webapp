@@ -14,7 +14,3 @@ variable "rds_instance_id" {
 variable "asg_name" {
   type = string
 }
-
-variable "cloudfront_distribution_id" {
-  type = string
-}

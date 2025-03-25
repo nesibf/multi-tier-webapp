@@ -43,8 +43,3 @@ variable "max_size" {
 variable "frontend_s3_bucket" {
   type = string
 }
-
-# variable "ssh_key_name" {
-#   type = string
-#   description = "The name of the SSH key pair for EC2 instances"
-# }

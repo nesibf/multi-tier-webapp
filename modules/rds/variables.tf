@@ -19,10 +19,6 @@ variable "bastion_security_group_id" {
   type = string
 }
 
-# variable "kms_key_arn" {
-#   type = string
-# }
-
 variable "instance_class" {
   type    = string
   default = "db.t3.micro"

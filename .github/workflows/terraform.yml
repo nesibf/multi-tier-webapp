@@ -45,19 +45,3 @@ jobs:
       - name: Apply Terraform Changes
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
-
-      # === NEW STEPS BELOW ===
-
-      - name: Clone frontend repo
-        run: git clone https://github.com/RohitManna11/3tier_python_todo_app.git
-
-      - name: Update REACT_APP_API_URL in .env
-        run: |
-          sed -i "s|^REACT_APP_API_URL=.*|REACT_APP_API_URL=http://$(terraform output -raw alb_dns_name)|" \
-            3tier_python_todo_app/frontend/.env
-
-      - name: Sync frontend → S3
-        run: |
-          aws s3 sync 3tier_python_todo_app/frontend \
-            s3://${{ secrets.FRONTEND_BUCKET }} \
-            --delete
